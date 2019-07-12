@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "692431330780",
+    "firebase_url": "https://pensieve-a1a73.firebaseio.com",
+    "project_id": "pensieve-a1a73",
+    "storage_bucket": "pensieve-a1a73.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:692431330780:android:3b9cf522b1e5c0b5",
+        "android_client_info": {
+          "package_name": "com.iiitv.pensieve_quiz"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "692431330780-vhg4u7flard7p38n1chdd01v0ajf758t.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.iiitv.pensieve_quiz",
+            "certificate_hash": "b0d9da5b9a995d2ac0d08c78aadb3105670c9b76"
+          }
+        },
+        {
+          "client_id": "692431330780-ooojq8mvcmfhhlfetol2pjespmd4ffdi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-NdTdxqcTYpopynKUFJlA8JLdOwD9yu8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "692431330780-ooojq8mvcmfhhlfetol2pjespmd4ffdi.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
