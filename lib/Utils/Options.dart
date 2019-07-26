@@ -32,15 +32,23 @@ class _OptionsState extends State<Options> {
       child: Padding(
         padding: EdgeInsets.all(15),
         child: Container(
-          padding: EdgeInsets.all(10),
+          padding: EdgeInsets.all(20),
           decoration: BoxDecoration(
+            boxShadow: <BoxShadow>[
+              BoxShadow(
+                  color: Colors.grey,
+                  blurRadius: 3,
+                  spreadRadius: 1,
+                  offset: Offset(3, 3))
+            ],
             borderRadius: BorderRadius.all(Radius.circular(50)),
             color: _color,
-            border: Border.all(),
+            // border: Border.,
           ),
           child: Text(
             widget.option,
             style: TextStyle(fontSize: 18),
+            textAlign: TextAlign.center,
           ),
         ),
       ),

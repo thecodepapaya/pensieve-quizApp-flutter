@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pensieve_quiz/Models/Question.dart';
@@ -31,11 +30,17 @@ class QuestionCard extends StatefulWidget {
 
 class _QuestionCardState extends State<QuestionCard> {
   int _questionIndex;
+  OverlayEntry _preventTouchOverlay;
 
   @override
   void initState() {
     super.initState();
     _questionIndex = 0;
+    _preventTouchOverlay = OverlayEntry(builder: (BuildContext context) {
+      return Container(
+        color: Colors.transparent,
+      );
+    });
   }
 
   @override
@@ -130,6 +135,7 @@ class _QuestionCardState extends State<QuestionCard> {
 
   onCorrectSelection() async {
     print("Correct Submission");
+    Overlay.of(context).insert(_preventTouchOverlay);
     await Firestore.instance
         .collection("monthlyQuizzes")
         .document(widget.documentID)
@@ -137,32 +143,62 @@ class _QuestionCardState extends State<QuestionCard> {
         .document(widget.user.email)
         .updateData({
       "score": FieldValue.increment(widget.questionData[_questionIndex].reward),
-      "finishTime": FieldValue.serverTimestamp(),
+      "finishTime": DateTime.now().millisecondsSinceEpoch,
+      // "finishTime": FieldValue.serverTimestamp(),
+      "correctAns": FieldValue.increment(1),
+      // "answers": FieldValue.arrayUnion(["correct"]),
     });
     _nextQuestion();
   }
 
-  onIncorrectSelection() {
+  onIncorrectSelection() async {
+    Overlay.of(context).insert(_preventTouchOverlay);
     print("Incorrect Submission");
+    await Firestore.instance
+        .collection("monthlyQuizzes")
+        .document(widget.documentID)
+        .collection("participants")
+        .document(widget.user.email)
+        .updateData({
+      // "finishTime": FieldValue.serverTimestamp(),
+      "finishTime": DateTime.now().millisecondsSinceEpoch,
+      // "answers": FieldValue.arrayUnion(["incorrect"]),
+      "incorrectAns": FieldValue.increment(1),
+    });
     //to let user know that they have pressed the wrong
     //option. Otherwise the next question appears immediately
     //without change in option color
-    Timer(Duration(milliseconds: 500), () {
-      _nextQuestion();
-    });
-    // _nextQuestion();
+    // Timer(Duration(milliseconds: 500), () {
+    //   _nextQuestion();
+    // });
+    _nextQuestion();
   }
 
-  onTimeOut() {
+  onTimeOut() async {
+    Overlay.of(context).insert(_preventTouchOverlay);
+    // _nextQuestion();
+
     print("Time out");
+    await Firestore.instance
+        .collection("monthlyQuizzes")
+        .document(widget.documentID)
+        .collection("participants")
+        .document(widget.user.email)
+        .updateData({
+      "finishTime": DateTime.now().millisecondsSinceEpoch,
+      // "answers": FieldValue.arrayUnion(["$_questionIndex incorrect"]),
+      "incorrectAns": FieldValue.increment(1),
+    });
     _nextQuestion();
   }
 
   void _nextQuestion() async {
+    _preventTouchOverlay.remove();
     if (_questionIndex < widget.questionData.length - 1) {
       setState(() {
         _questionIndex++;
       });
+      print("New Question");
     } else {
       print("Showing Results");
 

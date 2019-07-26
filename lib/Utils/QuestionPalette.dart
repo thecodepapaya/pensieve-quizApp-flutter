@@ -43,17 +43,21 @@ class _QuestionPaletteState extends State<QuestionPalette> {
     ]);
     for (int i = 0; i < widget.questionData.options.length; i++) {
       if (i == widget.questionData.answerIndex) {
-        list.add(Options(
-          isCorrect: true,
-          onTap: widget.onCorrectSelection,
-          option: widget.questionData.options[i],
-        ));
+        list.add(
+          Options(
+            isCorrect: true,
+            onTap: widget.onCorrectSelection,
+            option: widget.questionData.options[i],
+          ),
+        );
       } else {
-        list.add(Options(
-          isCorrect: false,
-          onTap: widget.onIncorrectSelection,
-          option: widget.questionData.options[i],
-        ));
+        list.add(
+          Options(
+            isCorrect: false,
+            onTap: widget.onIncorrectSelection,
+            option: widget.questionData.options[i],
+          ),
+        );
       }
     }
     return list;

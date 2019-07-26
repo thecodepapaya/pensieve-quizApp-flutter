@@ -25,76 +25,77 @@ class _QuizState extends State<Quiz> {
     _quizData = QuizData(
       documentID: widget.documentID,
     );
-    setBasicData(widget.documentID);
+    initializeBasicData(widget.documentID);
   }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: FutureBuilder<List<Question>>(
-          future: _quizData.fetchQuizData(),
-          builder:
-              (BuildContext context, AsyncSnapshot<List<Question>> snapshot) {
-            if (snapshot.connectionState == ConnectionState.active ||
-                snapshot.connectionState == ConnectionState.done) {
-              if (snapshot.hasError) {
-                return Column(
+    return Scaffold(
+      body: FutureBuilder<List<Question>>(
+        future: _quizData.fetchQuizData(),
+        builder:
+            (BuildContext context, AsyncSnapshot<List<Question>> snapshot) {
+          if (snapshot.connectionState == ConnectionState.active ||
+              snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.hasError) {
+              return Center(
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    Text("Error Occured. Please try again."),
+                    Text(
+                        "Error Occured. Please try again.\nError: ${snapshot.error}"),
                     SizedBox(
                       height: 10,
                     ),
-                    FlatButton(
+                    RaisedButton(
                       child: Text("Try Again"),
                       onPressed: () {
                         setState(() {});
                       },
                     ),
                   ],
-                );
-              }
-              return QuestionCard(
-                questionData: snapshot.data,
-                user: widget.user,
-                documentID: widget.documentID,
-                // onCorrectSelection: () async {
-                //   print("Correct Submission");
-                //   await Firestore.instance
-                //       .collection("monthlyQuizzes")
-                //       .document(widget.documentID)
-                //       .collection("participants")
-                //       .document(widget.user.email)
-                //       .updateData({
-                //     "score": FieldValue.increment(
-                //         snapshot.data[_questionIndex].reward),
-                //     "finishTime": FieldValue.serverTimestamp(),
-                //   });
-                //   nextQuestion();
-                // },
-                // onIncorrectSelection: () {
-                //   print("Incorrect Submission");
-                //   nextQuestion();
-                // },
-                // onTimeOut: () {
-                //   print("Time out");
-                //   // nextQuestion();
-                // },
-              );
-            } else {
-              return Center(
-                child: CircularProgressIndicator(),
+                ),
               );
             }
-          },
-        ),
+            return QuestionCard(
+              questionData: snapshot.data,
+              user: widget.user,
+              documentID: widget.documentID,
+              // onCorrectSelection: () async {
+              //   print("Correct Submission");
+              //   await Firestore.instance
+              //       .collection("monthlyQuizzes")
+              //       .document(widget.documentID)
+              //       .collection("participants")
+              //       .document(widget.user.email)
+              //       .updateData({
+              //     "score": FieldValue.increment(
+              //         snapshot.data[_questionIndex].reward),
+              //     "finishTime": FieldValue.serverTimestamp(),
+              //   });
+              //   nextQuestion();
+              // },
+              // onIncorrectSelection: () {
+              //   print("Incorrect Submission");
+              //   nextQuestion();
+              // },
+              // onTimeOut: () {
+              //   print("Time out");
+              //   // nextQuestion();
+              // },
+            );
+          } else {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        },
       ),
     );
   }
 
-  void setBasicData(String docId) async {
+  void initializeBasicData(String docId) async {
     print("Comitted basic data");
     await Firestore.instance
         .collection("monthlyQuizzes")
@@ -107,6 +108,10 @@ class _QuizState extends State<Quiz> {
         "emailID": widget.user.email,
         "uid": widget.user.uid,
         "photoUrl": widget.user.photoUrl,
+        "startTime": DateTime.now().millisecondsSinceEpoch,
+        "score": 0,
+        "correctAns": 0,
+        "incorrectAns": 0,
       },
       merge: true,
     );

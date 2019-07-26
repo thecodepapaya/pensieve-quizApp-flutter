@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -49,8 +50,11 @@ class _HomePageState extends State<HomePage> {
             );
           } else {
             if (snapshot.data.documents.isEmpty) {
-              return Center(
-                child: Text("No new Quiz Planned"),
+              return Stack(
+                fit: StackFit.expand,
+                children: <Widget>[
+                  Image.asset("assets/mystery.jpg"),
+                ],
               );
             }
             DocumentSnapshot ref = snapshot.data.documents.first;
@@ -93,7 +97,7 @@ class _HomePageState extends State<HomePage> {
                 Positioned(
                   bottom: 10,
                   left: 10,
-                  right: 100,
+                  right: 10,
                   // top: 500,
                   child: BackdropFilter(
                     filter: ImageFilter.blur(
@@ -135,24 +139,16 @@ class _HomePageState extends State<HomePage> {
                                 ? MaterialButton(
                                     child: Text("Start Now"),
                                     color: Colors.lightGreen,
-                                    onPressed: () {
-                                      Navigator.of(context).push(
-                                        PageRouteBuilder(
-                                          pageBuilder: (BuildContext context,
-                                              animation, secondsryAnimation) {
-                                            return SlideTransition(
-                                              child: Quiz(
-                                                user: widget.user,
-                                                documentID: ref.documentID,
-                                              ),
-                                              position: Tween<Offset>(
-                                                begin: Offset(1.0, 0),
-                                                end: Offset.zero,
-                                              ).animate(animation),
-                                            );
-                                          },
-                                        ),
-                                      );
+                                    onPressed: () async {
+                                      // to make sure that the user does not attempts to
+                                      // retake the quiz
+
+                                      if (await isEligible(ref)) {
+                                        showQuiz(ref);
+                                      } else {
+                                        showNotEligible();
+                                      }
+                                      // showQuiz(ref);
                                     },
                                   )
                                 : Container(),
@@ -193,14 +189,17 @@ class _HomePageState extends State<HomePage> {
                     SizedBox(
                       height: 10,
                     ),
-                    Text(
-                      "${widget.user.displayName}",
-                      textAlign: TextAlign.center,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 32,
-                        color: Colors.white,
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Text(
+                        "${widget.user.displayName}",
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 32,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ],
@@ -210,6 +209,69 @@ class _HomePageState extends State<HomePage> {
           }
         },
       ),
+    );
+  }
+
+  void showQuiz(DocumentSnapshot ref) {
+    print("Showing Quiz...");
+    Navigator.of(context).push(
+      PageRouteBuilder(
+        pageBuilder: (BuildContext context, animation, secondsryAnimation) {
+          return SlideTransition(
+            child: Quiz(
+              user: widget.user,
+              documentID: ref.documentID,
+            ),
+            position: Tween<Offset>(
+              begin: Offset(1.0, 0),
+              end: Offset.zero,
+            ).animate(animation),
+          );
+        },
+      ),
+    );
+  }
+
+  Future<bool> isEligible(DocumentSnapshot ref) async {
+    DocumentSnapshot snapshot = await Firestore.instance
+        .collection("monthlyQuizzes")
+        .document(ref.documentID)
+        .collection("participants")
+        .document(widget.user.email)
+        .get();
+    // print("Is Eligible: ${!snapshot.data["isSubmitted"] ?? false}");
+    if (snapshot.exists) {
+      print("Document Exists");
+      return !snapshot.data["isSubmitted"] ?? true;
+    } else {
+      print("Document does not Exists");
+      return true;
+    }
+  }
+
+  showNotEligible() {
+    print("Showing Not eligible Dialog");
+    return showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return WillPopScope(
+          onWillPop: () async => false,
+          child: AlertDialog(
+            title: Text("Permission Denied"),
+            actions: <Widget>[
+              FlatButton(
+                child: Text("OK"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              )
+            ],
+            content: Text(
+                "It seems as if you've already taken this quiz. Kindly contact the head of your club if you think it's a mistake."),
+          ),
+        );
+      },
     );
   }
 }
