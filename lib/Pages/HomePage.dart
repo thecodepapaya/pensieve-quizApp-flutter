@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:pensieve_quiz/Pages/Quiz.dart';
+import 'package:pensieve_quiz/Pages/Results.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({@required this.user});
@@ -17,7 +18,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  var upcomingQuizDB;
+  Query upcomingQuizDB;
+  int currentQuestionIndex;
 
   @override
   void initState() {
@@ -53,7 +55,20 @@ class _HomePageState extends State<HomePage> {
               return Stack(
                 fit: StackFit.expand,
                 children: <Widget>[
-                  Image.asset("assets/mystery.jpg"),
+                  Container(
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(
+                        sigmaX: 5,
+                        sigmaY: 5,
+                      ),
+                      child: Container(
+                        child: Image.asset(
+                          "assets/mystery.jpg",
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               );
             }
@@ -105,6 +120,7 @@ class _HomePageState extends State<HomePage> {
                       sigmaY: 4,
                     ),
                     child: Container(
+                      padding: EdgeInsets.all(8),
                       decoration: BoxDecoration(
                         color: Colors.transparent.withOpacity(0.2),
                         borderRadius: BorderRadius.all(Radius.circular(20)),
@@ -146,7 +162,7 @@ class _HomePageState extends State<HomePage> {
                                       if (await isEligible(ref)) {
                                         showQuiz(ref);
                                       } else {
-                                        showNotEligible();
+                                        showNotEligible(ref);
                                       }
                                       // showQuiz(ref);
                                     },
@@ -197,6 +213,7 @@ class _HomePageState extends State<HomePage> {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
+                          backgroundColor: Colors.black12,
                           fontSize: 32,
                           color: Colors.white,
                         ),
@@ -221,6 +238,12 @@ class _HomePageState extends State<HomePage> {
             child: Quiz(
               user: widget.user,
               documentID: ref.documentID,
+              //+1 to show the question after the current
+              //question since a value of "currentQuestionIndex" = 3
+              //indicates the user has already attempted
+              //question at index 3 so we need to show the question
+              //at index 3+1 i.e 4
+              currentQuestionIndex: currentQuestionIndex + 1,
             ),
             position: Tween<Offset>(
               begin: Offset(1.0, 0),
@@ -242,33 +265,63 @@ class _HomePageState extends State<HomePage> {
     // print("Is Eligible: ${!snapshot.data["isSubmitted"] ?? false}");
     if (snapshot.exists) {
       print("Document Exists");
-      return !snapshot.data["isSubmitted"] ?? true;
+      //check the current question index and show questions
+      //accordingly to the user
+      currentQuestionIndex = snapshot.data["currentQuestionIndex"] ?? -1;
+      print("Question Index: $currentQuestionIndex");
+      return snapshot.data["isSubmitted"] == null
+          ? true
+          : snapshot.data["isSubmitted"];
     } else {
       print("Document does not Exists");
+      currentQuestionIndex = -1;
+      print("Question Index: $currentQuestionIndex");
       return true;
     }
   }
 
-  showNotEligible() {
+  showNotEligible(DocumentSnapshot ref) {
     print("Showing Not eligible Dialog");
     return showDialog(
       context: context,
-      barrierDismissible: false,
+      // barrierDismissible: false,
       builder: (BuildContext context) {
         return WillPopScope(
           onWillPop: () async => false,
           child: AlertDialog(
-            title: Text("Permission Denied"),
+            // title: Text("You think you are smart"),
             actions: <Widget>[
               FlatButton(
-                child: Text("OK"),
+                child: Text("Agree"),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
+              ),
+              FlatButton(
+                child: Text("Results"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).push(
+                    PageRouteBuilder(
+                      pageBuilder: (BuildContext context, animation,
+                          secondaryAnimation) {
+                        return SlideTransition(
+                          child: Results(
+                            documentId: ref.documentID,
+                            user: widget.user,
+                          ),
+                          position: Tween<Offset>(
+                            begin: Offset(1.0, 0),
+                            end: Offset.zero,
+                          ).animate(animation),
+                        );
+                      },
+                    ),
+                  );
+                },
               )
             ],
-            content: Text(
-                "It seems as if you've already taken this quiz. Kindly contact the head of your club if you think it's a mistake."),
+            content: Text("You think you are smart?\nThink again."),
           ),
         );
       },

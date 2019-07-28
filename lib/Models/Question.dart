@@ -5,7 +5,7 @@ class Question {
   Question({@required this.snapshot}) {
     _options = List<String>();
     loadfromSnapshot(snapshot);
-    printQuestions();
+    // printQuestions();
   }
 
   final DocumentSnapshot snapshot;

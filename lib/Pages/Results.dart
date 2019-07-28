@@ -16,6 +16,7 @@ class _ResultsState extends State<Results> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // backgroundColor: Colors.blue,
       body: StreamBuilder<QuerySnapshot>(
         stream: Firestore.instance
             .collection("monthlyQuizzes")
@@ -94,89 +95,98 @@ class _ResultsState extends State<Results> {
   }
 
   List<Widget> rankList(QuerySnapshot snapshots) {
-    // print("Result data: ${snapshots.documents.first}");
+    print("Result length: ${snapshots.documents.length}");
+    int _rank = 0;
     List<Widget> list = List<Widget>();
-    snapshots.documents.forEach((docSnap) {
-      list.add(
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(50),
-            color: docSnap.data["emailID"] == widget.user.email
-                ? Colors.green
-                : Colors.white,
-          ),
-          child: ListTile(
-            contentPadding: EdgeInsets.all(8),
-            isThreeLine: false,
-            title: Text(
-              docSnap.data["displayName"],
-              textScaleFactor: 1.2,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+    snapshots.documents.forEach(
+      (docSnap) {
+        // print("rank: ${_rank++}");
+        list.add(
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50),
+              color: docSnap.data["emailID"] == widget.user.email
+                  ? Colors.green
+                  : Colors.transparent,
             ),
-            // subtitle: Text(docSnap.data["emailID"],),
-            leading: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: CircleAvatar(
-                backgroundImage: NetworkImage(docSnap.data["photoUrl"]),
+            child: ListTile(
+              contentPadding: EdgeInsets.all(8),
+              isThreeLine: false,
+              title: Text(
+                docSnap.data["displayName"],
+                textScaleFactor: 1.2,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
-            ),
-            trailing: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                docSnap.data["score"].toString(),
-                textScaleFactor: 1.5,
+              // subtitle: Text("Rank $_rank"),
+              leading: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: CircleAvatar(
+                  backgroundImage: NetworkImage(docSnap.data["photoUrl"]),
+                ),
               ),
+              trailing: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  docSnap.data["score"].toString(),
+                  textScaleFactor: 1.5,
+                ),
+              ),
+              onTap: () {
+                return showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: Text("Details"),
+                        content: Table(
+                          children: [
+                            TableRow(
+                              children: <Widget>[
+                                Text("Name"),
+                                Text(docSnap.data["displayName"]),
+                              ],
+                            ),
+                            TableRow(
+                              children: <Widget>[
+                                Text("Email"),
+                                Text(docSnap.data["emailID"]),
+                              ],
+                            ),
+                            // TableRow(
+                            //   children: <Widget>[
+                            //     Text("Rank"),
+                            //     Text("$_rank"),
+                            //   ],
+                            // ),
+                            TableRow(
+                              children: <Widget>[
+                                Text("Total Score"),
+                                Text(docSnap.data["score"].toString()),
+                              ],
+                            ),
+                            TableRow(
+                              children: <Widget>[
+                                Text("Time Taken"),
+                                Text(
+                                    "${((docSnap.data["finishTime"] - docSnap.data["startTime"]) / 1000)} Sec")
+                              ],
+                            ),
+                            TableRow(
+                              children: <Widget>[
+                                Text("Correct Ans"),
+                                Text(docSnap.data["correctAns"].toString()),
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
+                    });
+              },
             ),
-            onTap: () {
-              return showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: Text("Details"),
-                      content: Table(
-                        children: [
-                          TableRow(
-                            children: <Widget>[
-                              Text("Name"),
-                              Text(docSnap.data["displayName"]),
-                            ],
-                          ),
-                          TableRow(
-                            children: <Widget>[
-                              Text("Email"),
-                              Text(docSnap.data["emailID"]),
-                            ],
-                          ),
-                          TableRow(
-                            children: <Widget>[
-                              Text("Total Score"),
-                              Text(docSnap.data["score"].toString()),
-                            ],
-                          ),
-                          TableRow(
-                            children: <Widget>[
-                              Text("Time Taken"),
-                              Text(
-                                  "${((docSnap.data["finishTime"] - docSnap.data["startTime"]) / 1000)} Sec")
-                            ],
-                          ),
-                          TableRow(
-                            children: <Widget>[
-                              Text("Correct Ans"),
-                              Text(docSnap.data["correctAns"].toString()),
-                            ],
-                          ),
-                        ],
-                      ),
-                    );
-                  });
-            },
           ),
-        ),
-      );
-    });
-
+        );
+      },
+    );
     return list;
   }
 }

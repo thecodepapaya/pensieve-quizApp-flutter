@@ -10,6 +10,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class QuestionCard extends StatefulWidget {
   QuestionCard({
     @required this.questionData,
+    @required this.currentQuestionIndex,
     // @required this.onCorrectSelection,
     // @required this.onIncorrectSelection,
     // @required this.onTimeOut,
@@ -18,6 +19,7 @@ class QuestionCard extends StatefulWidget {
   });
 
   final List<Question> questionData;
+  final int currentQuestionIndex;
   // final Function onCorrectSelection;
   // final Function onIncorrectSelection;
   // final Function onTimeOut;
@@ -35,7 +37,8 @@ class _QuestionCardState extends State<QuestionCard> {
   @override
   void initState() {
     super.initState();
-    _questionIndex = 0;
+    print("Current Question index: ${widget.currentQuestionIndex}");
+    _questionIndex = widget.currentQuestionIndex;
     _preventTouchOverlay = OverlayEntry(builder: (BuildContext context) {
       return Container(
         color: Colors.transparent,
@@ -144,9 +147,8 @@ class _QuestionCardState extends State<QuestionCard> {
         .updateData({
       "score": FieldValue.increment(widget.questionData[_questionIndex].reward),
       "finishTime": DateTime.now().millisecondsSinceEpoch,
-      // "finishTime": FieldValue.serverTimestamp(),
       "correctAns": FieldValue.increment(1),
-      // "answers": FieldValue.arrayUnion(["correct"]),
+      "currentQuestionIndex": _questionIndex,
     });
     _nextQuestion();
   }
@@ -160,9 +162,9 @@ class _QuestionCardState extends State<QuestionCard> {
         .collection("participants")
         .document(widget.user.email)
         .updateData({
+      "currentQuestionIndex": _questionIndex,
       // "finishTime": FieldValue.serverTimestamp(),
       "finishTime": DateTime.now().millisecondsSinceEpoch,
-      // "answers": FieldValue.arrayUnion(["incorrect"]),
       "incorrectAns": FieldValue.increment(1),
     });
     //to let user know that they have pressed the wrong
@@ -186,8 +188,9 @@ class _QuestionCardState extends State<QuestionCard> {
         .document(widget.user.email)
         .updateData({
       "finishTime": DateTime.now().millisecondsSinceEpoch,
+      "currentQuestionIndex": _questionIndex,
       // "answers": FieldValue.arrayUnion(["$_questionIndex incorrect"]),
-      "incorrectAns": FieldValue.increment(1),
+      "unanswered": FieldValue.increment(1),
     });
     _nextQuestion();
   }

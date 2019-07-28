@@ -6,10 +6,15 @@ import 'package:pensieve_quiz/Models/QuizData.dart';
 import 'package:pensieve_quiz/Utils/QuestionCard.dart';
 
 class Quiz extends StatefulWidget {
-  Quiz({@required this.user, @required this.documentID});
+  Quiz({
+    @required this.user,
+    @required this.documentID,
+    @required this.currentQuestionIndex,
+  });
 
   final FirebaseUser user;
   final String documentID;
+  final int currentQuestionIndex;
 
   @override
   _QuizState createState() => _QuizState();
@@ -25,7 +30,15 @@ class _QuizState extends State<Quiz> {
     _quizData = QuizData(
       documentID: widget.documentID,
     );
-    initializeBasicData(widget.documentID);
+    // print("Index passed: ${widget.currentQuestionIndex}");
+    if (widget.currentQuestionIndex <= 0) {
+      print(
+        "------------------------------"
+        "\nResetting startTime"
+        "\nCurret Index: ${widget.currentQuestionIndex}",
+      );
+      initializeBasicData(widget.documentID);
+    }
   }
 
   @override
@@ -44,7 +57,7 @@ class _QuizState extends State<Quiz> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     Text(
-                        "Error Occured. Please try again.\nError: ${snapshot.error}"),
+                        "Error Occured. Please inform club Heads.\nError: ${snapshot.error}"),
                     SizedBox(
                       height: 10,
                     ),
@@ -62,6 +75,7 @@ class _QuizState extends State<Quiz> {
               questionData: snapshot.data,
               user: widget.user,
               documentID: widget.documentID,
+              currentQuestionIndex: widget.currentQuestionIndex,
               // onCorrectSelection: () async {
               //   print("Correct Submission");
               //   await Firestore.instance
@@ -109,9 +123,11 @@ class _QuizState extends State<Quiz> {
         "uid": widget.user.uid,
         "photoUrl": widget.user.photoUrl,
         "startTime": DateTime.now().millisecondsSinceEpoch,
+        "finishTime": DateTime.now().millisecondsSinceEpoch,
         "score": 0,
         "correctAns": 0,
         "incorrectAns": 0,
+        "unanswered": 0,
       },
       merge: true,
     );
