@@ -14,15 +14,40 @@ class _SignInState extends State<SignIn> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.green,
       body: Center(
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
-              Text("Sign In"),
+              CircleAvatar(
+                backgroundImage: AssetImage("assets/icon.jpg"),
+                radius: 100,
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Text(
+                "It's Quiz Time!",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 40,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              // Text("Sign In"),
               RaisedButton(
-                child: Text("Sign in with Google"),
+                padding: EdgeInsets.all(20),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20)),
+                child: Text(
+                  "Google Signin",
+                  textScaleFactor: 1.2,
+                ),
                 onPressed: () {
                   _handleGoogleSignIn().then((FirebaseUser user) {
                     print(

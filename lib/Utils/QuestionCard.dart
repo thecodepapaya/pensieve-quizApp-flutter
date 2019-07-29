@@ -39,7 +39,6 @@ class _QuestionCardState extends State<QuestionCard> {
     super.initState();
     // print("Current Question index: ${widget.currentQuestionIndex}");
     //shuffle all questions
-    widget.questionData.shuffle();
     _questionIndex = widget.currentQuestionIndex;
     _preventTouchOverlay = OverlayEntry(builder: (BuildContext context) {
       return Container(

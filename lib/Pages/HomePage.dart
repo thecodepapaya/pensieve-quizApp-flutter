@@ -56,19 +56,60 @@ class _HomePageState extends State<HomePage> {
                 fit: StackFit.expand,
                 children: <Widget>[
                   Container(
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(
-                        sigmaX: 5,
-                        sigmaY: 5,
-                      ),
-                      child: Container(
-                        child: Image.asset(
-                          "assets/mystery.jpg",
-                          fit: BoxFit.cover,
+                    // child: BackdropFilter(
+                    //   filter: ImageFilter.blur(
+                    //     sigmaX: 5,
+                    //     sigmaY: 5,
+                    //   ),
+                    // child: Container(
+                    child: Image.asset(
+                      "assets/mystery.jpg",
+                      fit: BoxFit.cover,
+                    ),
+                    // ),
+                    // ),
+                  ),
+                  BackdropFilter(
+                    filter: ImageFilter.blur(
+                      sigmaX: 3,
+                      sigmaY: 3,
+                    ),
+                    child: SafeArea(
+                      child: Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Text(
+                              "The Quizzes we complete have a way of coming back to us in the end",
+                              textAlign: TextAlign.center,
+                              textScaleFactor: 2.0,
+                              style: TextStyle(
+                                color: Colors.white,
+                                // backgroundColor: Colors.black12,
+                              ),
+                            ),
+                            // SizedBox(
+                            //   height: 300,
+                            // ),
+                            Text(
+                              "If not always in the way we expect.",
+                              textAlign: TextAlign.center,
+                              textScaleFactor: 2.0,
+                              style: TextStyle(
+                                color: Colors.white,
+                                // backgroundColor: Colors.black12,
+                              ),
+                            )
+                          ],
                         ),
                       ),
                     ),
                   ),
+                  // SafeArea(
+
+                  // ),
                 ],
               );
             }
@@ -326,21 +367,21 @@ class _HomePageState extends State<HomePage> {
     print("Showing Not eligible Dialog");
     return showDialog(
       context: context,
-      // barrierDismissible: false,
       builder: (BuildContext context) {
         return WillPopScope(
           onWillPop: () async => false,
           child: AlertDialog(
-            // title: Text("You think you are smart"),
+            title: Text("Lights, Camera and Cut?"),
+            content: Text("Retakes are for Movies, not for live Quizzes"),
             actions: <Widget>[
               FlatButton(
-                child: Text("Think again"),
+                child: Text("Agree"),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
               ),
               FlatButton(
-                child: Text("Results"),
+                child: Text("Show Results"),
                 onPressed: () {
                   Navigator.of(context).pop();
                   Navigator.of(context).push(
@@ -363,7 +404,6 @@ class _HomePageState extends State<HomePage> {
                 },
               )
             ],
-            content: Text("You think you are smart?\nThink again."),
           ),
         );
       },
