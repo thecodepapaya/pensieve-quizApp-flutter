@@ -37,7 +37,9 @@ class _QuestionCardState extends State<QuestionCard> {
   @override
   void initState() {
     super.initState();
-    print("Current Question index: ${widget.currentQuestionIndex}");
+    // print("Current Question index: ${widget.currentQuestionIndex}");
+    //shuffle all questions
+    widget.questionData.shuffle();
     _questionIndex = widget.currentQuestionIndex;
     _preventTouchOverlay = OverlayEntry(builder: (BuildContext context) {
       return Container(
@@ -163,7 +165,6 @@ class _QuestionCardState extends State<QuestionCard> {
         .document(widget.user.email)
         .updateData({
       "currentQuestionIndex": _questionIndex,
-      // "finishTime": FieldValue.serverTimestamp(),
       "finishTime": DateTime.now().millisecondsSinceEpoch,
       "incorrectAns": FieldValue.increment(1),
     });
@@ -189,7 +190,6 @@ class _QuestionCardState extends State<QuestionCard> {
         .updateData({
       "finishTime": DateTime.now().millisecondsSinceEpoch,
       "currentQuestionIndex": _questionIndex,
-      // "answers": FieldValue.arrayUnion(["$_questionIndex incorrect"]),
       "unanswered": FieldValue.increment(1),
     });
     _nextQuestion();

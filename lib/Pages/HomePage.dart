@@ -7,6 +7,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:pensieve_quiz/Pages/Quiz.dart';
 import 'package:pensieve_quiz/Pages/Results.dart';
+import 'package:package_info/package_info.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({@required this.user});
@@ -31,7 +32,6 @@ class _HomePageState extends State<HomePage> {
                 DateTime.now().millisecondsSinceEpoch.toString())
         .orderBy("startTime")
         .limit(1);
-    // print("Month: ${DateTime.now().year}");
     print("Epoch Time: ${DateTime.now().millisecondsSinceEpoch}");
   }
 
@@ -156,13 +156,19 @@ class _HomePageState extends State<HomePage> {
                                     child: Text("Start Now"),
                                     color: Colors.lightGreen,
                                     onPressed: () async {
-                                      // to make sure that the user does not attempts to
-                                      // retake the quiz
-
-                                      if (await isEligible(ref)) {
-                                        showQuiz(ref);
+                                      //check if user is not using an outdated
+                                      //version of the app which could bypass
+                                      //critical bugs
+                                      if (!await isOnCorrectVersion(ref)) {
+                                        showOutdatedAppDialog();
                                       } else {
-                                        showNotEligible(ref);
+                                        // to make sure that the user does not attempts to
+                                        // retake the quiz
+                                        if (await isEligible(ref)) {
+                                          showQuiz(ref);
+                                        } else {
+                                          showNotEligible(ref);
+                                        }
                                       }
                                       // showQuiz(ref);
                                     },
@@ -229,6 +235,42 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Future<bool> isOnCorrectVersion(DocumentSnapshot ref) async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+
+    String buildNumber = packageInfo.buildNumber;
+    print("buildNumber:$buildNumber");
+    return buildNumber == ref.data["minVersionCode"].toString();
+  }
+
+  showOutdatedAppDialog() {
+    print("Showing outDated app Dialog");
+    return showDialog(
+      context: context,
+      // barrierDismissible: false,
+      builder: (BuildContext context) {
+        return WillPopScope(
+          onWillPop: () async => false,
+          child: AlertDialog(
+            // title: Text("You think you are smart"),
+            actions: <Widget>[
+              FlatButton(
+                child: Text("Ok"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              )
+            ],
+            content: Text(
+              "You are running an outdated app. Please update your app."
+              "\nFor more instructions contact you club heads",
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   void showQuiz(DocumentSnapshot ref) {
     print("Showing Quiz...");
     Navigator.of(context).push(
@@ -271,7 +313,7 @@ class _HomePageState extends State<HomePage> {
       print("Question Index: $currentQuestionIndex");
       return snapshot.data["isSubmitted"] == null
           ? true
-          : snapshot.data["isSubmitted"];
+          : !snapshot.data["isSubmitted"];
     } else {
       print("Document does not Exists");
       currentQuestionIndex = -1;
@@ -292,7 +334,7 @@ class _HomePageState extends State<HomePage> {
             // title: Text("You think you are smart"),
             actions: <Widget>[
               FlatButton(
-                child: Text("Agree"),
+                child: Text("Think again"),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
