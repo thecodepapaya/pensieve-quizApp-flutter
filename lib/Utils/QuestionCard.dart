@@ -11,20 +11,16 @@ class QuestionCard extends StatefulWidget {
   QuestionCard({
     @required this.questionData,
     @required this.currentQuestionIndex,
-    // @required this.onCorrectSelection,
-    // @required this.onIncorrectSelection,
-    // @required this.onTimeOut,
     @required this.user,
     @required this.documentID,
+    @required this.startTime,
   });
 
   final List<Question> questionData;
   final int currentQuestionIndex;
-  // final Function onCorrectSelection;
-  // final Function onIncorrectSelection;
-  // final Function onTimeOut;
   final FirebaseUser user;
   final String documentID;
+  final int startTime;
 
   @override
   _QuestionCardState createState() => _QuestionCardState();
@@ -140,6 +136,8 @@ class _QuestionCardState extends State<QuestionCard> {
   onCorrectSelection() async {
     print("Correct Submission");
     Overlay.of(context).insert(_preventTouchOverlay);
+    double totalTime =
+        (DateTime.now().millisecondsSinceEpoch - widget.startTime) / 1000;
     await Firestore.instance
         .collection("monthlyQuizzes")
         .document(widget.documentID)
@@ -150,6 +148,7 @@ class _QuestionCardState extends State<QuestionCard> {
       "finishTime": DateTime.now().millisecondsSinceEpoch,
       "correctAns": FieldValue.increment(1),
       "currentQuestionIndex": _questionIndex,
+      "totalTime": totalTime,
     });
     _nextQuestion();
   }
@@ -157,6 +156,8 @@ class _QuestionCardState extends State<QuestionCard> {
   onIncorrectSelection() async {
     Overlay.of(context).insert(_preventTouchOverlay);
     print("Incorrect Submission");
+    double totalTime =
+        (DateTime.now().millisecondsSinceEpoch - widget.startTime) / 1000;
     await Firestore.instance
         .collection("monthlyQuizzes")
         .document(widget.documentID)
@@ -166,6 +167,7 @@ class _QuestionCardState extends State<QuestionCard> {
       "currentQuestionIndex": _questionIndex,
       "finishTime": DateTime.now().millisecondsSinceEpoch,
       "incorrectAns": FieldValue.increment(1),
+      "totalTime": totalTime,
     });
     //to let user know that they have pressed the wrong
     //option. Otherwise the next question appears immediately
@@ -179,7 +181,8 @@ class _QuestionCardState extends State<QuestionCard> {
   onTimeOut() async {
     Overlay.of(context).insert(_preventTouchOverlay);
     // _nextQuestion();
-
+    double totalTime =
+        (DateTime.now().millisecondsSinceEpoch - widget.startTime) / 1000;
     print("Time out");
     await Firestore.instance
         .collection("monthlyQuizzes")
@@ -190,6 +193,7 @@ class _QuestionCardState extends State<QuestionCard> {
       "finishTime": DateTime.now().millisecondsSinceEpoch,
       "currentQuestionIndex": _questionIndex,
       "unanswered": FieldValue.increment(1),
+      "totalTime": totalTime,
     });
     _nextQuestion();
   }

@@ -24,7 +24,7 @@ class _ResultsState extends State<Results> {
             .collection("participants")
             // .where("isSubmitted", isEqualTo: true)
             .orderBy("score", descending: true)
-            .orderBy("finishTime", descending: false)
+            .orderBy("totalTime", descending: false)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting ||
@@ -167,8 +167,7 @@ class _ResultsState extends State<Results> {
                             TableRow(
                               children: <Widget>[
                                 Text("Time Taken"),
-                                Text(
-                                    "${((docSnap.data["finishTime"] - docSnap.data["startTime"]) / 1000)} Sec")
+                                Text("${docSnap.data["totalTime"]} Sec"),
                               ],
                             ),
                             TableRow(

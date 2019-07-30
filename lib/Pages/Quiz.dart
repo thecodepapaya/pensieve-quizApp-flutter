@@ -22,7 +22,7 @@ class Quiz extends StatefulWidget {
 
 class _QuizState extends State<Quiz> {
   QuizData _quizData;
-  // int _questionIndex = 0;
+  final quizStartTime = DateTime.now().millisecondsSinceEpoch;
 
   @override
   void initState() {
@@ -76,6 +76,7 @@ class _QuizState extends State<Quiz> {
               user: widget.user,
               documentID: widget.documentID,
               currentQuestionIndex: widget.currentQuestionIndex,
+              startTime: quizStartTime,
               // onCorrectSelection: () async {
               //   print("Correct Submission");
               //   await Firestore.instance
@@ -122,12 +123,14 @@ class _QuizState extends State<Quiz> {
         "emailID": widget.user.email,
         "uid": widget.user.uid,
         "photoUrl": widget.user.photoUrl,
-        "startTime": DateTime.now().millisecondsSinceEpoch,
-        "finishTime": DateTime.now().millisecondsSinceEpoch,
+        "startTime": quizStartTime,
+        "finishTime":
+            quizStartTime, //initially starttime and finish time are same
         "score": 0,
         "correctAns": 0,
         "incorrectAns": 0,
         "unanswered": 0,
+        "totalTime": 0,
       },
       merge: true,
     );
