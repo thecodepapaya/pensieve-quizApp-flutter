@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:pensieve_quiz/Pages/AdminConsole.dart';
 import 'package:pensieve_quiz/Pages/Quiz.dart';
 import 'package:pensieve_quiz/Pages/Results.dart';
 import 'package:package_info/package_info.dart';
@@ -196,6 +197,9 @@ class _HomePageState extends State<HomePage> {
                                 ? MaterialButton(
                                     child: Text("Start Now"),
                                     color: Colors.lightGreen,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
                                     onPressed: () async {
                                       //check if user is not using an outdated
                                       //version of the app which could bypass
@@ -238,6 +242,26 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                 ),
+
+                //Admin console functionality
+
+                Positioned(
+                  top: 30,
+                  left: 0,
+                  child: Container(
+                    color: Colors.white,
+                    child: IconButton(
+                      icon: Icon(Icons.person),
+                      onPressed: () async {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (BuildContext context) {
+                          return AdminConsole();
+                        }));
+                      },
+                    ),
+                  ),
+                ),
+
                 Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -281,7 +305,8 @@ class _HomePageState extends State<HomePage> {
 
     String buildNumber = packageInfo.buildNumber;
     print("buildNumber:$buildNumber");
-    return buildNumber == ref.data["minVersionCode"].toString();
+    // return buildNumber == ref.data["minVersionCode"].toString();
+    return true;
   }
 
   showOutdatedAppDialog() {

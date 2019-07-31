@@ -101,91 +101,122 @@ class _ResultsState extends State<Results> {
     snapshots.documents.forEach(
       (docSnap) {
         // print("rank: ${_rank++}");
+        _rank++;
         list.add(
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(50),
-              color: docSnap.data["emailID"] == widget.user.email
-                  ? Colors.green
-                  : Colors.transparent,
-            ),
-            child: ListTile(
-              contentPadding: EdgeInsets.all(8),
-              isThreeLine: false,
-              title: Text(
-                docSnap.data["displayName"],
-                textScaleFactor: 1.2,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+          Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(50),
+                // color: docSnap.data["emailID"] == widget.user.email
+                //     ? Colors.green
+                //     : Colors.transparent,
+                color: rankColor(
+                    _rank, docSnap.data["emailID"] == widget.user.email),
               ),
-              // subtitle: Text("Rank $_rank"),
-              leading: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: CircleAvatar(
-                  backgroundImage: NetworkImage(docSnap.data["photoUrl"]),
+              child: ListTile(
+                contentPadding: EdgeInsets.all(8),
+                isThreeLine: false,
+                title: Text(
+                  docSnap.data["displayName"],
+                  textScaleFactor: 1.2,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-              trailing: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  docSnap.data["score"].toString(),
-                  textScaleFactor: 1.5,
+                // subtitle: Text("${_rank}"),
+                leading: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CircleAvatar(
+                    backgroundImage: NetworkImage(docSnap.data["photoUrl"]),
+                  ),
                 ),
+                trailing: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    docSnap.data["score"].toString(),
+                    textScaleFactor: 1.5,
+                  ),
+                ),
+                onTap: () {
+                  return showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Text("Details"),
+                          content: Table(
+                            children: [
+                              // TableRow(
+                              //   children: <Widget>[
+                              //     Text("Name"),
+                              //     Text(docSnap.data["displayName"]),
+                              //   ],
+                              // ),
+                              TableRow(
+                                children: <Widget>[
+                                  Text("Email"),
+                                  Text(docSnap.data["emailID"]),
+                                ],
+                              ),
+                              // TableRow(
+                              //   children: <Widget>[
+                              //     Text("Total Score"),
+                              //     Text(docSnap.data["score"].toString()),
+                              //   ],
+                              // ),
+                              TableRow(
+                                children: <Widget>[
+                                  Text("Total Time"),
+                                  Text("${docSnap.data["totalTime"]} Sec"),
+                                ],
+                              ),
+                              TableRow(
+                                children: <Widget>[
+                                  Text("Correct Ans"),
+                                  Text(docSnap.data["correctAns"].toString()),
+                                ],
+                              ),
+                              // TableRow(
+                              //   children: <Widget>[
+                              //     Text("Incorrect Ans"),
+                              //     Text(docSnap.data["incorrectAns"].toString()),
+                              //   ],
+                              // ),
+                              // TableRow(
+                              //   children: <Widget>[
+                              //     Text("Unanswered"),
+                              //     Text(docSnap.data["unanswered"].toString()),
+                              //   ],
+                              // ),
+                            ],
+                          ),
+                        );
+                      });
+                },
               ),
-              onTap: () {
-                return showDialog(
-                    context: context,
-                    builder: (context) {
-                      return AlertDialog(
-                        title: Text("Details"),
-                        content: Table(
-                          children: [
-                            TableRow(
-                              children: <Widget>[
-                                Text("Name"),
-                                Text(docSnap.data["displayName"]),
-                              ],
-                            ),
-                            TableRow(
-                              children: <Widget>[
-                                Text("Email"),
-                                Text(docSnap.data["emailID"]),
-                              ],
-                            ),
-                            // TableRow(
-                            //   children: <Widget>[
-                            //     Text("Rank"),
-                            //     Text("$_rank"),
-                            //   ],
-                            // ),
-                            TableRow(
-                              children: <Widget>[
-                                Text("Total Score"),
-                                Text(docSnap.data["score"].toString()),
-                              ],
-                            ),
-                            TableRow(
-                              children: <Widget>[
-                                Text("Time Taken"),
-                                Text("${docSnap.data["totalTime"]} Sec"),
-                              ],
-                            ),
-                            TableRow(
-                              children: <Widget>[
-                                Text("Correct Ans"),
-                                Text(docSnap.data["correctAns"].toString()),
-                              ],
-                            ),
-                          ],
-                        ),
-                      );
-                    });
-              },
             ),
           ),
         );
       },
     );
     return list;
+  }
+
+  Color rankColor(int rank, bool isSelf) {
+    // print("is self: $isSelf");
+    switch (rank) {
+      case 1:
+        //hex for gold colour
+        return Color(0xffCfb53b);
+      case 2:
+        //hex for silver colour
+        return Color(0xffe6e8fa);
+      case 3:
+        //hex for bronze colour
+        return Color(0xff8c7853);
+      default:
+        {
+          return isSelf ? Colors.green : Colors.white;
+        }
+    }
   }
 }
