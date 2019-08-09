@@ -14,11 +14,11 @@ class _UpcomingQuizzesState extends State<UpcomingQuizzes> {
       child: StreamBuilder<QuerySnapshot>(
         stream: Firestore.instance
             .collection("monthlyQuizzes")
-            .where("startTime",
+            .where("expiryTime",
                 isGreaterThanOrEqualTo:
                     DateTime.now().millisecondsSinceEpoch.toString())
             .where("isActive", isEqualTo: false)
-            .orderBy("startTime")
+            .orderBy("expiryTime")
             .snapshots(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting ||
@@ -52,7 +52,7 @@ class _UpcomingQuizzesState extends State<UpcomingQuizzes> {
             child: ListTile(
               title: Text("${document.data["abstractHeading"]}"),
               subtitle: Text(
-                  "Expires ${DateTime.fromMillisecondsSinceEpoch(int.parse(document.data["startTime"]))}"),
+                  "Expires ${DateTime.fromMillisecondsSinceEpoch(int.parse(document.data["expiryTime"]))}"),
               isThreeLine: true,
               trailing: IconButton(
                 color: Colors.blue,

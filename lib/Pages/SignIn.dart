@@ -22,7 +22,7 @@ class _SignInState extends State<SignIn> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
               CircleAvatar(
-                backgroundImage: AssetImage("assets/icon.jpg"),
+                backgroundImage: AssetImage("assets/icon.jpeg"),
                 radius: 100,
               ),
               SizedBox(
@@ -40,22 +40,25 @@ class _SignInState extends State<SignIn> {
                 height: 20,
               ),
               // Text("Sign In"),
-              RaisedButton(
-                padding: EdgeInsets.all(20),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20)),
-                child: Text(
-                  "Google Signin",
-                  textScaleFactor: 1.2,
+              Padding(
+                padding: const EdgeInsets.all(3.0),
+                child: RaisedButton(
+                  padding: EdgeInsets.all(20),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20)),
+                  child: Text(
+                    "Google Signin",
+                    textScaleFactor: 1.2,
+                  ),
+                  onPressed: () {
+                    _handleGoogleSignIn().then((FirebaseUser user) {
+                      print(
+                          "Signed in ${user.displayName} with E mail ${user.email}");
+                    }).catchError((e) {
+                      print("Error signin in: $e");
+                    });
+                  },
                 ),
-                onPressed: () {
-                  _handleGoogleSignIn().then((FirebaseUser user) {
-                    print(
-                        "Signed in ${user.displayName} with E mail ${user.email}");
-                  }).catchError((e) {
-                    print("Error signin in: $e");
-                  });
-                },
               ),
             ],
           ),

@@ -30,7 +30,7 @@ class _AdminConsoleState extends State<AdminConsole>
           leading: Padding(
             padding: const EdgeInsets.all(8.0),
             child: CircleAvatar(
-              backgroundImage: AssetImage("assets/icon.jpg"),
+              backgroundImage: AssetImage("assets/icon.jpeg"),
             ),
           ),
           actions: <Widget>[
@@ -96,7 +96,7 @@ class _AdminConsoleState extends State<AdminConsole>
                   },
                 );
               },
-            )
+            ),
           ],
           bottom: TabBar(
             tabs: <Widget>[

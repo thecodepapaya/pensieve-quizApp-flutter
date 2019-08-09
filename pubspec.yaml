@@ -40,7 +40,7 @@ dev_dependencies:
 flutter_icons:
   android: "launcher_icon" 
   ios: true
-  image_path: "assets/icon.jpg"
+  image_path: "assets/icon.jpeg"
 
 
 # For information on the generic Dart part of this file, see the
@@ -57,7 +57,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/mystery.jpg
-    - "assets/icon.jpg"
+    - assets/icon.jpeg
   #  - assets/default.png
   #  - images/a_dot_ham.jpeg
 

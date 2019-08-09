@@ -28,10 +28,10 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     upcomingQuizDB = Firestore.instance
         .collection("monthlyQuizzes")
-        .where("startTime",
+        .where("expiryTime",
             isGreaterThanOrEqualTo:
                 DateTime.now().millisecondsSinceEpoch.toString())
-        .orderBy("startTime")
+        .orderBy("expiryTime")
         .limit(1);
     print("Epoch Time: ${DateTime.now().millisecondsSinceEpoch}");
   }
@@ -228,39 +228,39 @@ class _HomePageState extends State<HomePage> {
 
                 //log out functionality
 
-                Positioned(
-                  top: 30,
-                  right: 0,
-                  child: Container(
-                    color: Colors.white,
-                    child: IconButton(
-                      icon: Icon(Icons.exit_to_app),
-                      onPressed: () async {
-                        await FirebaseAuth.instance.signOut();
-                        await GoogleSignIn().signOut();
-                      },
-                    ),
-                  ),
-                ),
+                // Positioned(
+                //   top: 30,
+                //   right: 0,
+                //   child: Container(
+                //     color: Colors.white,
+                //     child: IconButton(
+                //       icon: Icon(Icons.exit_to_app),
+                //       onPressed: () async {
+                //         await FirebaseAuth.instance.signOut();
+                //         await GoogleSignIn().signOut();
+                //       },
+                //     ),
+                //   ),
+                // ),
 
                 //Admin console functionality
 
-                Positioned(
-                  top: 30,
-                  left: 0,
-                  child: Container(
-                    color: Colors.white,
-                    child: IconButton(
-                      icon: Icon(Icons.person),
-                      onPressed: () async {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (BuildContext context) {
-                          return AdminConsole();
-                        }));
-                      },
-                    ),
-                  ),
-                ),
+                // Positioned(
+                //   top: 30,
+                //   left: 0,
+                //   child: Container(
+                //     color: Colors.white,
+                //     child: IconButton(
+                //       icon: Icon(Icons.person),
+                //       onPressed: () async {
+                //         Navigator.push(context,
+                //             MaterialPageRoute(builder: (BuildContext context) {
+                //           return AdminConsole();
+                //         }));
+                //       },
+                //     ),
+                //   ),
+                // ),
 
                 Column(
                   mainAxisAlignment: MainAxisAlignment.start,

@@ -22,7 +22,7 @@ class QuizMetadata {
     this._isActive = snapshot.data["isActive"];
     this._minVersionCode = snapshot.data["minVersionCode"];
     this._imageUrl = snapshot.data["bgImageUrl"];
-    this._exipiryTime = snapshot.data["startTime"];
+    this._exipiryTime = snapshot.data["expiryTime"];
   }
 
   String get abstractHeading => this._abstractHeading;
